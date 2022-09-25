@@ -3,15 +3,14 @@ from pygame.sprite import Sprite
 
 
 class Tile(Sprite):
-    def __init__(self, screen, texture, percentsY, isBottom, percentcX, isRight):
+    def __init__(self, screen, texture, percentsY, isBottom, percentcX, isRight, kW,kh):
         super().__init__()
         self.screen = screen
         self.screenrect = self.screen.get_rect()
         self.image = pygame.image.load(f"images/{texture}")
-        if (texture != "platforma_dlya_igri.png"):
-            self.image = pygame.transform.scale(self.image,(self.screen.get_width()/2.738944365192582,self.screen.get_height()/11.73913043478261))
-        else:
-            self.image = pygame.transform.scale(self.image,(self.screen.get_width()/1.443609022556391,self.screen.get_height()/6.75))
+
+        self.image = pygame.transform.scale(self.image,(self.screen.get_width()/kW,self.screen.get_height()/kh))
+
 
         #print(f"k_ширина: {self.screen.get_width()/self.image.get_width()}\nk_высота: {self.screen.get_height()/self.image.get_height()}" )
         self.rect = self.image.get_rect()

@@ -3,19 +3,37 @@ import sys
 from player import Player
 from tile import Tile
 from tilemap import TileMap
+from DamageTileMap import DamageTileMap
+from  HealthBar import  HealthBar
 class testAnimation():
     def __init__(self):
         # инициализация движка
         pygame.init()
 
         # создание экрана и установка размеров
-        self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+        self.screen = pygame.display.set_mode((0,0), pygame.FULLSCREEN )
 
         pygame.display.set_caption("testAnim")
 
 
-        self.tilemap = TileMap(self.screen).GetTileMap()
-        self.player = Player(self.screen,self.tilemap)
+        self.tilemap = TileMap(self.screen)
+        self.damageTileMap = DamageTileMap(self.screen)
+        self.SetTiles()
+        self.player = Player(self.screen,self.tilemap.GetTileMap(), self.damageTileMap.GetTileMap())
+        self.healthbar = HealthBar(self.screen,self.player)
+
+    def SetTiles(self):
+        self.damageTileMap.AddTile("damage.png", 38, True, 30, False, 100, 25)
+
+        self.tilemap.AddTile("platform.png", 12, True, 2, True, 2.738944365192582, 11.73913043478261)
+        self.tilemap.AddTile("platform.png", 12, True, 2, False, 2.738944365192582, 11.73913043478261)
+        self.tilemap.AddTile("platform.png", 43, False, 30, True, 2.738944365192582, 11.73913043478261)
+        self.tilemap.AddTile("platform.png", 30, True, 10, True, 2.738944365192582, 11.73913043478261)
+        self.tilemap.AddTile("platform.png", 30, True, 10, False, 2.738944365192582, 11.73913043478261)
+        self.tilemap.AddTile("platforma_dlya_igri.png", -10, True, 0, True, 1.443609022556391, 6.75)
+        self.tilemap.AddTile("platforma_dlya_igri.png", -10, True, 0, False, 1.443609022556391, 6.75)
+
+
 
     def Start(self):
         while True:
@@ -23,7 +41,7 @@ class testAnimation():
             self.ChekEvents()
             # Обновляем лодки
             self.player.Update()
-
+            self.healthbar.update()
             # Обновляем экран
             self.UpdateScreen()
 
@@ -57,8 +75,9 @@ class testAnimation():
     def UpdateScreen(self):
         self.screen.fill((44,240,0))
         self.player.Blitme()
-        for tile in self.tilemap.sprites():
-            tile.Blitme()
+        self.tilemap.Blit()
+        self.healthbar.Blitme()
+        self.damageTileMap.Blit()
         pygame.display.flip()
 
 game = testAnimation()
