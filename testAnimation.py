@@ -1,3 +1,4 @@
+from  inventory import Inventory
 import pygame
 import sys
 from player import Player
@@ -21,6 +22,9 @@ class testAnimation():
         self.SetTiles()
         self.player = Player(self.screen,self.tilemap.GetTileMap(), self.damageTileMap.GetTileMap())
         self.healthbar = HealthBar(self.screen,self.player)
+        self.inventory = Inventory(self.screen)
+        self.inventoryUpdate = False
+
 
     def SetTiles(self):
         self.damageTileMap.AddTile("damage.png", 38, True, 30, False, 100, 25)
@@ -64,6 +68,9 @@ class testAnimation():
                 self.player.StartJumping()
         elif event.key == pygame.K_ESCAPE:
             sys.exit()
+        elif event.key == pygame.K_e:
+            self.inventoryUpdate = not self.inventoryUpdate
+
 
     def ChekUp(self, event):
         if event.key == pygame.K_d:
@@ -71,6 +78,9 @@ class testAnimation():
         elif event.key == pygame.K_a:
             self.player.left = False
 
+    def UpdateInvatoryIfNeed(self):
+        if self.inventoryUpdate:
+            self.inventory.Blitme()
 
     def UpdateScreen(self):
         self.screen.fill((44,240,0))
@@ -78,6 +88,7 @@ class testAnimation():
         self.tilemap.Blit()
         self.healthbar.Blitme()
         self.damageTileMap.Blit()
+        self.UpdateInvatoryIfNeed()
         pygame.display.flip()
 
 game = testAnimation()
