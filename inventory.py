@@ -1,6 +1,7 @@
 import pygame
 from pygame.sprite import Sprite
 from pygame.rect import Rect
+from random import randint
 
 class Inventory(Sprite):
     def __init__(self,screen):
@@ -11,6 +12,12 @@ class Inventory(Sprite):
         self.screen = screen
         self.PosInventory()
         self.cells = self.CreateCells()
+
+    def SpawnItemTest(self):
+        for i in range(74):
+            item = Item(self.screen,"banana_bullet.png","banan Pulya",21)
+            item.InInventory()
+            self.AddItem(item)
 
     def CreateArray(self):
         for i in range(8):
@@ -67,13 +74,26 @@ class Inventory(Sprite):
         self.rect.center = screenRect.center
 
     def AddItem(self,item):
-        self.items.append(item)
+        for sublist in self.items:
+            for i in range(len(sublist)):
+                if sublist[i] == None:
+                    item.InInventory()
+                    sublist[i] = item
+                    return
 
     def Blitme(self):
+        # Отрисовка области инвентаря
         pygame.draw.rect(self.screen, (0,114,97), self.rect)
+
+        # Отрисовка ячеек
         for sublist in self.cells:
             for cell in sublist:
                 cell.blitme()
+                item = self.items[cell.i][cell.j]
+                if item != None:
+                    item.rect.center = cell.rect.center
+                    item.Blitme()
+
 
 
 class Item(Sprite):
@@ -85,16 +105,30 @@ class Item(Sprite):
         self.screen = screen
         self.IN_INVENTORY = False
 
-        self.rect = Rect(0, 0, 10, 10)
+        #self.rect = Rect(0, 0, 10, 10)
+
+        # Подгрузить картинку
+        self.image = pygame.image.load(f"images/{texture}")
+        self.image = pygame.transform.scale(self.image, (30, 30))
+        # Получить rect картинки
+        self.rect = self.image.get_rect()
+
 
     def InInventory(self):
         self.IN_INVENTORY=True
-        self.rect.width = 30
-        self.rect.height = 30
+        self.image = pygame.transform.scale(self.image, (60,60))
+        self.rect = self.image.get_rect()
 
 
     def Blitme(self):
-        pygame.draw.rect(self.screen, (241, 46, 50), self.rect)
+        #pygame.draw.rect(self.screen, (241, 46, 50), self.rect)
+        # Отрисовать картинку
+       self.screen.blit(self.image,self.rect)
+
+    def Pos(self, tile):
+        self.rect.midbottom = tile.rect.midtop
+        x = tile.rect.width // 2
+        self.rect.x += randint(0, x) * randint(-1,1)
 
 class Cell(Sprite):
     """ Класс ячейки \n

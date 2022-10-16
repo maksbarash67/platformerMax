@@ -1,3 +1,4 @@
+from inventory import  Item
 from  inventory import Inventory
 import pygame
 import sys
@@ -6,6 +7,7 @@ from tile import Tile
 from tilemap import TileMap
 from DamageTileMap import DamageTileMap
 from  HealthBar import  HealthBar
+from random import choice
 class testAnimation():
     def __init__(self):
         # инициализация движка
@@ -21,10 +23,21 @@ class testAnimation():
         self.damageTileMap = DamageTileMap(self.screen)
         self.SetTiles()
         self.player = Player(self.screen,self.tilemap.GetTileMap(), self.damageTileMap.GetTileMap())
+        self.items = pygame.sprite.Group()
+        self.SetItems()
         self.healthbar = HealthBar(self.screen,self.player)
         self.inventory = Inventory(self.screen)
         self.inventoryUpdate = False
 
+    def SetItems(self):
+        for i in range(42):
+            self.CreateItem("banana_bullet.png", "baban pulya", 21)
+            self.CreateItem("almaz.png", "almaz", 67)
+
+    def CreateItem(self, texture, name, price):
+        item = Item(self.screen, texture, name, price)
+        item.Pos(choice(self.tilemap.GetTileMap().sprites()))
+        self.items.add(item)
 
     def SetTiles(self):
         self.damageTileMap.AddTile("damage.png", 38, True, 30, False, 100, 25)
@@ -37,8 +50,12 @@ class testAnimation():
         self.tilemap.AddTile("platforma_dlya_igri.png", -10, True, 0, True, 1.443609022556391, 6.75)
         self.tilemap.AddTile("platforma_dlya_igri.png", -10, True, 0, False, 1.443609022556391, 6.75)
 
+    def CheckPickUpObject(self):
+        colideTile = pygame.sprite.spritecollideany(self.player, self.items)
 
-
+        if colideTile != None:
+            self.inventory.AddItem(colideTile)
+            self.items.remove(colideTile)
     def Start(self):
         while True:
             # Чекаем события
@@ -82,12 +99,17 @@ class testAnimation():
         if self.inventoryUpdate:
             self.inventory.Blitme()
 
+    def UpdateItems(self):
+        for item in self.items.sprites():
+            item.Blitme()
+        self.CheckPickUpObject()
     def UpdateScreen(self):
         self.screen.fill((44,240,0))
         self.player.Blitme()
         self.tilemap.Blit()
         self.healthbar.Blitme()
         self.damageTileMap.Blit()
+        self.UpdateItems()
         self.UpdateInvatoryIfNeed()
         pygame.display.flip()
 
